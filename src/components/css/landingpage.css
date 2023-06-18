@@ -1,0 +1,120 @@
+/* landing page ------------------------------------------- */
+.landing-container {
+  background-image: url("https://images.unsplash.com/photo-1485579149621-3123dd979885?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1331&q=80");
+  background-size: cover;
+  background-position: center;
+  /* height: 100vh; */
+  max-width: 100% !important;
+}
+
+.header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.header .col1 {
+  padding: 0 50px;
+}
+
+.header .col1 h1 {
+  color: #fff;
+  margin-bottom: 20px;
+}
+
+.podcast-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* height: 100vh; */
+  background-color: #f5f5f5;
+  text-align: center;
+}
+
+.podcast-row h2 {
+  margin: 20px 0;
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+}
+
+.podcast-row .col1 {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap; /* Allow cards to wrap to the next line */
+  align-items: center;
+}
+
+@media screen and (max-width: 768px) {
+  .podcast-row .col1 {
+    padding: 0 20px;
+  }
+}
+
+.blog-card.animate {
+  animation: slideUp 1s ease-in-out; /* Increased duration to 1s */
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@keyframes slideUp {
+  0% {
+    opacity: 0;
+    transform: translateY(100px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+
+@media screen and (max-width: 768px) {
+  .header {
+    flex-direction: column;
+  }
+  .header .col1 {
+    padding: 0 20px;
+  }
+}
+
+/* blogs sections ------------------------------------------- */
+.blogs-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* height: 100vh; */
+  background-image: linear-gradient(
+    to bottom,
+    rgba(114, 111, 111, 0.8),
+    rgba(0, 0, 0, 0.377)
+  );
+  text-align: center;
+}
+
+.blogs-section .col1 {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap; /* Allow cards to wrap to the next line */
+  align-items: center;
+}
+
+.blogs-section .col1 .blog-card {
+  width: 300px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  overflow: hidden;
+  transition: box-shadow 0.3s ease-in-out;
+  margin-bottom: 20px;
+}
+
+/* hover effect */
+.blogs-section .col1 .blog-card:hover {
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+.blogs-section h2 {
+  color: #fff;
+}

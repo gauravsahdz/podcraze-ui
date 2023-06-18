@@ -1,0 +1,15 @@
+.navbar{
+  color: black !important;
+}
+
+.navbar-nav{
+  display: flex;
+  align-items: center;
+}
+
+.logo {
+    display: inline-flex;
+    align-items: center;
+    font-size: 24px;
+    font-weight: bold;
+  }

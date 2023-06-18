@@ -1,0 +1,146 @@
+.spotify-player-container {
+  color: black;
+  font-family: Arial, sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+}
+
+.tool-button-container {
+  display: flex;
+  justify-content: flex-end;
+  flex-direction: row;
+  align-items: center;
+  margin: 0 10px;
+  padding: 10px;
+  cursor: pointer;
+  transition: color 0.3s ease-in-out;
+}
+.tool-icon {
+  margin: 0 10px;
+  cursor: pointer;
+
+  &:hover {
+    transform: scale(1.1);
+  }
+}
+
+.player-card {
+  background: rgba(255, 255, 255, 0.19);
+  border-radius: 16px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(7.4px);
+  -webkit-backdrop-filter: blur(7.4px);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 4px;
+  padding: 20px;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  max-width: 1000px;
+  z-index: 100;
+}
+
+.song-cover {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.song-info {
+  margin-left: 10px;
+  padding-top: 8px;
+}
+
+.song-info h5 {
+  font-size: 1.2rem;
+  margin-bottom: 5px;
+}
+
+.song-info p {
+  font-size: 0.9rem;
+  margin-bottom: 5px;
+}
+
+.controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.5rem;
+  margin-top: 10px;
+}
+
+.controls .control-icon {
+  margin: 0 10px;
+  cursor: pointer;
+  transition: color 0.3s ease-in-out;
+}
+
+.controls .control-icon:hover {
+  color: #838785;
+}
+
+.controls .control-icon.clicked {
+  color: #1db954;
+}
+
+.progress {
+  width: 100%;
+  height: 4px;
+  background-color: #535353;
+  border-radius: 4px;
+  margin-top: 10px;
+}
+.timer-and-total-duration {
+  display: flex;
+  justify-content: space-between;
+}
+
+.timer-and-total-duration span {
+  font-size: 0.8rem;
+  margin: 0 5px;
+}
+
+.progress-bar {
+  height: 100%;
+  background-color: #1db954;
+  border-radius: 4px;
+}
+
+@media (max-width: 768px) {
+  .player-card {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    max-width: 100%;
+    border-radius: 0;
+  }
+
+  .song-cover {
+    width: 60px;
+    height: 60px;
+  }
+
+  .song-info {
+    margin-left: 10px;
+    padding-top: 8px;
+  }
+
+  .song-info h5 {
+    font-size: 1rem;
+    margin-bottom: 5px;
+  }
+
+  .song-info p {
+    font-size: 0.8rem;
+    margin-bottom: 5px;
+  }
+
+  .controls {
+    font-size: 1.2rem;
+    margin-top: 10px;
+  }
+}

@@ -1,0 +1,98 @@
+/* Add some spacing to the overall container */
+.manage-podcasts-container {
+  height: 100%;
+  padding: 0 20px;
+  overflow: auto;
+}
+
+/* Hide the scrollbar */
+.manage-podcasts-container {
+  /* best scroll bar css  */
+  scrollbar-width: thin;
+  scrollbar-color: rgb(113, 110, 110) rgb(255, 255, 255);
+}
+
+.manage-podcasts-container::-webkit-scrollbar {
+  /* give a best looking scrollbar css  */
+}
+
+/* Style the header */
+.manage-podcasts-header h1 {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+/* Style the actions row */
+.manage-podcasts-actions {
+  margin-bottom: 20px;
+}
+
+.add-podcast-col {
+  display: flex;
+  align-items: center;
+  /* margin-bottom: 10px; */
+}
+
+.add-podcast-button {
+  width: 100%;
+}
+
+.search-podcasts-col {
+  width: 70%;
+  display: flex;
+  align-items: center;
+}
+
+.search-podcasts-input {
+  /* margin-right: 20px; */
+}
+
+/* Style the podcast cards */
+.podcastsCards-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+@media (max-width: 768px) {
+  .manage-podcasts-container {
+    padding: 0 10px;
+  }
+
+  .manage-podcasts-header h1 {
+    font-size: 20px;
+  }
+
+  .add-podcast-col {
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 10px;
+  }
+
+  .search-podcasts-col {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+
+  .podcastsCards-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+}
+
+@media (max-width: 990px) {
+  .add-podcast-col {
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 10px;
+    width: 30%;
+  }
+
+  .search-podcasts-col {
+    width: 70%;
+    margin-bottom: 10px;
+  }
+}

@@ -1,0 +1,62 @@
+/* PodcastForm.css */
+
+.podcast-form {
+  background-color: #f9f9f9;
+  padding: 20px;
+  border-radius: 5px;
+}
+
+.podcastForm-row{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.podcastForm-label {
+  font-weight: bold;
+}
+
+.podcastForm-control {
+  border-radius: 3px;
+  border: 1px solid #ddd;
+  padding: 8px;
+  width: 100%;
+}
+
+.podcastForm-file-input {
+  display: none;
+}
+
+.podcastForm-file-label {
+  display: inline-block;
+  padding: 8px 15px;
+  background-color: #007bff;
+  color: #fff;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.podcastForm-file-label:hover {
+  background-color: #0056b3;
+}
+
+.podcastForm-file-name {
+  margin-top: 10px;
+  font-size: 14px;
+  color: #555;
+  margin-left: 10px;
+}
+
+.podcastForm-submit-button {
+  background-color: #007bff;
+  border-color: #007bff;
+  color: #fff;
+  padding: 8px 20px;
+  margin-top: 10px;
+}
+
+.podcastForm-submit-button:hover {
+  background-color: #0056b3;
+  border-color: #0056b3;
+}
