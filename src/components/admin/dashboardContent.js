@@ -1,39 +1,57 @@
-import React, { useEffect, useState } from 'react';
-import { Row, Col, Card } from 'react-bootstrap';
-import '../css/dashboardContent.css';
+import React, { useEffect, useState } from "react";
+import { Row, Col, Card } from "react-bootstrap";
+import "../css/dashboardContent.css";
 
-import { getAllPodcasts } from '../api/podcastService';
-import { getAllUsers } from '../api/authService';
-import AlertComponent from '../utils/alert';
+import { getAllPodcasts } from "../../api/podcastService";
+import { getAllUsers } from "../../api/authService";
+import AlertComponent from "../../utils/alert/alert";
+import Loader from "../../utils/loader/loader";
 
-const DashboardContent = ({ setLoading }) => {
+const DashboardContent = () => {
   const [audioPodcastsLength, setAudioPodcastsLength] = useState(0);
   const [videoPodcastsLength, setVideoPodcastsLength] = useState(0);
 
   const [usersList, setUsersList] = useState([]);
 
-  const [alert, setAlert] = useState({ icon: '', message: '', color: '', background: '', show: false });
+  const [isLoading, setIsLoading] = useState(false);
   const [key, setKey] = useState(0);
+  const [alert, setAlert] = useState({
+    show: false,
+    icon: "",
+    message: "",
+    color: "",
+  });
 
   const fetchPodcasts = async () => {
+    setIsLoading(true);
     try {
       const response = await getAllPodcasts();
       const podcasts = response.data.podcasts;
 
-      const audioPodcasts = podcasts.filter(podcast => podcast.mediaType === 'audio');
-      const videoPodcasts = podcasts.filter(podcast => podcast.mediaType === 'video');
+      const audioPodcasts = podcasts.filter(
+        (podcast) => podcast.mediaType === "audio"
+      );
+      const videoPodcasts = podcasts.filter(
+        (podcast) => podcast.mediaType === "video"
+      );
 
       setAudioPodcastsLength(audioPodcasts.length);
       setVideoPodcastsLength(videoPodcasts.length);
-
     } catch (error) {
-      setAlert({ icon: 'faCircleXmark', message: error.response.data.message, color: "#e87474", show: true });
-      setKey(prevKey => prevKey + 1);
-      setLoading(false);
+      setKey((prevKey) => prevKey + 1);
+      setAlert({
+        show: true,
+        icon: "errorIcon",
+        message: error.response ? error.response.data.message : "something went wrong!",
+        color: "danger",
+      });
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const fetchUsers = async () => {
+    setIsLoading(true);
     try {
       const response = await getAllUsers();
       const users = response.data.users;
@@ -41,56 +59,67 @@ const DashboardContent = ({ setLoading }) => {
         setUsersList(users);
       }
     } catch (error) {
-      setAlert({ icon: 'faCircleXmark', message: error.response.data.message, color: "#e87474", show: true });
       setKey((prevKey) => prevKey + 1);
+      setAlert({
+        show: true,
+        icon: "errorIcon",
+        message: error.response ? error.response.data.message : "something went wrong!",
+        color: "danger",
+      });
+    } finally {
+      setIsLoading(false);
     }
-
   };
 
-
   useEffect(() => {
-    setLoading(true); // Start loading
-    fetchPodcasts()
-      .finally(() =>
-        setLoading(false)); // Stop loading when API call is finished
-
-    fetchUsers()
-      .finally(() => setLoading(false));
+    fetchPodcasts();
+    fetchUsers();
   }, []);
-
-
 
   return (
     <>
+      <Loader isLoading={isLoading} />
+      <AlertComponent alert={alert} key={key} />
       <Row className="dashboard-row">
         <Col md={4} className="col-md-4">
           <Card className="dashboard-card">
             <Card.Body>
-              <Card.Title className="dashboard-card-title">Total Users</Card.Title>
-              <Card.Text className="dashboard-card-text">{usersList.length}</Card.Text>
+              <Card.Title className="dashboard-card-title">
+                Total Users
+              </Card.Title>
+              <Card.Text className="dashboard-card-text">
+                {usersList.length}
+              </Card.Text>
             </Card.Body>
           </Card>
         </Col>
         <Col md={4} className="col-md-4">
           <Card className="dashboard-card">
             <Card.Body>
-              <Card.Title className="dashboard-card-title">Total audio Podcasts</Card.Title>
-              <Card.Text className="dashboard-card-text">{audioPodcastsLength}</Card.Text>
+              <Card.Title className="dashboard-card-title">
+                Total audio Podcasts
+              </Card.Title>
+              <Card.Text className="dashboard-card-text">
+                {audioPodcastsLength}
+              </Card.Text>
             </Card.Body>
           </Card>
         </Col>
         <Col md={4} className="col-md-4">
           <Card className="dashboard-card">
             <Card.Body>
-              <Card.Title className="dashboard-card-title">Total video podcasts</Card.Title>
-              <Card.Text className="dashboard-card-text">{videoPodcastsLength}</Card.Text>
+              <Card.Title className="dashboard-card-title">
+                Total video podcasts
+              </Card.Title>
+              <Card.Text className="dashboard-card-text">
+                {videoPodcastsLength}
+              </Card.Text>
             </Card.Body>
           </Card>
         </Col>
-        <AlertComponent key={key} alert={alert} />
       </Row>
     </>
-  )
-}
+  );
+};
 
-export default DashboardContent
+export default DashboardContent;

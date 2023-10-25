@@ -7,41 +7,6 @@ import { Link } from "react-router-dom";
 const SidebarComponent = () => {
 
     return (
-        // <div className="sidebar">
-        //     <ul className="nav flex-column pt-2">
-        //         <li className="nav-item">
-        //             <a href="/admin/dashboard">
-        //                 <FontAwesomeIcon icon={faDesktop} className="me-2" />
-        //                 Dashboard
-        //             </a>
-        //         </li>
-        //         <li className="nav-item">
-        //             <a href="/admin/dashboard/users">
-        //                 <FontAwesomeIcon icon={faUsers} className="me-2" />
-        //                 Manage users
-        //             </a>
-        //         </li>
-        //         <li className="nav-item">
-        //             <a href="/admin/dashboard/podcasts">
-        //                 <FontAwesomeIcon icon={faClapperboard} className="me-2" />
-        //                 Manage Podcasts
-        //             </a>
-        //         </li>
-        //         <li className="nav-item">
-        //             <a href="/admin/database">
-        //                 <FontAwesomeIcon icon={faDatabase} className="me-2" />
-        //                 Database
-        //             </a>
-        //         </li>
-        //         <li className="nav-item">
-        //             <a href="/admin/settings">
-        //                 <FontAwesomeIcon icon={faCog} className="me-2" />
-        //                 Settings
-        //             </a>
-        //         </li>
-
-        //     </ul>
-        // </div>
         <div className="sidebar">
             <ul className="nav flex-column pt-2">
                 <li className="nav-item">

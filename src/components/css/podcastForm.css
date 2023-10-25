@@ -17,6 +17,11 @@
   font-weight: bold;
 }
 
+.error-message {
+  color: red;
+  font-size: 14px;
+}
+
 .podcastForm-control {
   border-radius: 3px;
   border: 1px solid #ddd;

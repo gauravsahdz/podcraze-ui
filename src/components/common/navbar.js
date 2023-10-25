@@ -5,22 +5,14 @@ import { Navbar, Container, Nav, NavDropdown } from "react-bootstrap";
 import { Link } from "react-router-dom";
 
 import "../css/navbar.css";
-import {
-  isAuthenticated,
-  isModerator,
-  isAdmin,
-  isUser,
-  user
-} from "../utils/authUtils";
+import { isAuthenticated, user, isAdmin } from "../../utils/authUtils";
 
 const NavbarComponent = ({ bg, variant }) => {
-
   const username = user() ? user().username : "";
-
 
   const logout = () => {
     localStorage.removeItem("token");
-    localStorage.removeItem("user");
+    localStorage.removeItem("podcrazeUser");
     window.location.href = "/";
   };
 
@@ -50,40 +42,45 @@ const NavbarComponent = ({ bg, variant }) => {
             </NavDropdown>
           </Nav>
           <Nav className="ms-auto">
-            <Nav.Link as={Link} to="/admin/dashboard" hidden={!isAuthenticated()}>
-              Dashboard
-            </Nav.Link>
-            <Nav.Link as={Link} to="/profile">
-              <NavDropdown title={username} id="collasible-nav-dropdown">
-                <NavDropdown.Item as={Link} to="/favourites"></NavDropdown.Item>
-                {/* <NavDropdown.Item as={Link} to="/playlists">
-                  Playlists
-                </NavDropdown.Item>
-                <NavDropdown.Item as={Link} to="/liked">
-                  Liked
-                </NavDropdown.Item>
-                <NavDropdown.Item as={Link} to="/favourites">
-                  Favourites
-                </NavDropdown.Item> */}
-                <NavDropdown.Item as={Link} to="/account">
-                  Account
-                </NavDropdown.Item>
-                <NavDropdown.Item onClick={logout}>
-                  Logout
-                </NavDropdown.Item>
-              </NavDropdown>
-            </Nav.Link>
-            <Nav.Link as={Link} to="/signup" hidden={isAuthenticated()}>
-              Signup
-            </Nav.Link>
-            <Nav.Link
-              eventKey={2}
-              as={Link}
-              to="/login"
-              hidden={isAuthenticated()}
-            >
-              Login
-            </Nav.Link>
+            {isAuthenticated() && isAdmin() && (
+              <>
+                <Nav.Link as={Link} to="/admin/dashboard">
+                  Dashboard
+                </Nav.Link>
+              </>
+            )}
+            {isAuthenticated() && (
+              <>
+                <Nav.Link as={Link} to="/profile">
+                  <NavDropdown title={username} id="collasible-nav-dropdown">
+                    <NavDropdown.Item
+                      as={Link}
+                      to="/favourites"
+                    ></NavDropdown.Item>
+                    <NavDropdown.Item as={Link} to="/account">
+                      Account
+                    </NavDropdown.Item>
+                    <NavDropdown.Item onClick={logout}>Logout</NavDropdown.Item>
+                  </NavDropdown>
+                </Nav.Link>
+              </>
+            )}
+
+            {!isAuthenticated() && (
+              <>
+                <Nav.Link as={Link} to="/signup">
+                  Signup
+                </Nav.Link>
+                <Nav.Link
+                  eventKey={2}
+                  as={Link}
+                  to="/login"
+                  hidden={isAuthenticated()}
+                >
+                  Login
+                </Nav.Link>
+              </>
+            )}
           </Nav>
         </Navbar.Collapse>
       </Container>

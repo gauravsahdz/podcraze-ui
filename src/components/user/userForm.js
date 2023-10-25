@@ -1,102 +1,172 @@
 import React, { useState, useEffect } from "react";
 import { Form, Button, Container, Row, Col } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
+import { createUser, getUserById, updateUser } from "../../api/authService";
+import AlertComponent from "../../utils/alert/alert";
+import Loader from "../../utils/loader/loader";
 
-import AlertComponent from "../utils/alert";
-import { createUser, getUserById, updateUser } from "../api/authService";
-
-const UserForm = ({ setLoading }) => {
-  const params = new URLSearchParams(window.location.search); // getting the query params from the url
-  const id = params.get("id"); // getting the id from the query params
+const UserForm = () => {
+  const params = new URLSearchParams(window.location.search);
+  const id = params.get("id");
   const navigate = useNavigate();
 
-  const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
-  const [alert, setAlert] = useState({ variant: "", message: "", show: false });
-  const [password, setPassword] = useState("");
-  const [passwordConfirm, setPasswordConfirm] = useState("");
-  const [role, setRole] = useState("");
-  const [key, setKey] = useState(0); // used to reset the alert component
+  const [formData, setFormData] = useState({
+    username: "",
+    email: "",
+    password: "",
+    passwordConfirm: "",
+    role: "",
+  });
 
+  const [key, setKey] = useState(0);
+  const [operating, setOperating] = useState(false);
+  const [alert, setAlert] = useState({
+    show: false,
+    icon: "",
+    message: "",
+    color: "",
+  });
+
+  const [errors, setErrors] = useState({
+    username: "",
+    email: "",
+    password: "",
+    passwordConfirm: "",
+  });
+
+  const validateField = (fieldName, value) => {
+    switch (fieldName) {
+      case "username":
+        if (!value) return "Username is required.";
+        if (value.length < 5 || value.length > 15)
+          return "Username should be between 5 and 15 characters.";
+        return "";
+      case "email":
+        const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+        if (!value) return "Email is required.";
+        if (!emailPattern.test(value))
+          return "Please enter a valid email address.";
+        return "";
+      case "password":
+        if (!value) return "Password is required.";
+        if (value.length < 8 || value.length > 15)
+          return "Password should be between 8 and 15 characters.";
+        return "";
+      case "passwordConfirm":
+        if (formData.password !== value) return "Passwords do not match.";
+        return "";
+      default:
+        return "";
+    }
+  };
+
+  const handleFieldChange = (fieldName, value) => {
+    setFormData({ ...formData, [fieldName]: value });
+    setErrors({ ...errors, [fieldName]: validateField(fieldName, value) });
+  };
+
+  const setUserEditData = async () => {
+    try {
+      const response = await getUserById(id);
+      if (response.status === "success") {
+        const user = response.data.user;
+        setFormData({
+          username: user.username,
+          email: user.email,
+          role: user.role,
+        });
+      }
+    } catch (error) {
+      setKey((prevKey) => prevKey + 1);
+      setAlert({
+        show: true,
+        icon: "errorIcon",
+        message: error.response
+          ? error.response.data.message
+          : "Something went wrong!",
+        color: "red",
+      });
+    }
+  };
 
   useEffect(() => {
     if (id !== "new") {
-      setLoading(true);
-      getUserById(id)
-        .then((response) => {
-          const user = response.data.user;
-          setUsername(user.username);
-          setEmail(user.email);
-          setRole(user.role);
-          setLoading(false);
-        })
-        .catch((error) => {
-          setAlert({ icon: 'faCircleXmark', message: error.response.data.message, color: "#e87474", show: true });
-          setKey((prevKey) => prevKey + 1);
-          setLoading(false);
-        });
+      setUserEditData();
     }
   }, [id]);
 
-  const handleFormSubmit = (e) => {
+  const handleFormSubmit = async (e) => {
     e.preventDefault();
+    const fieldNames = ["username", "email", "password"];
+    const hasErrors = fieldNames.some(
+      (fieldName) => validateField(fieldName, formData[fieldName]) !== ""
+    );
 
-    if (id === "new") {
-      createNewUser();
-    } else {
-      const data = {
-        username,
-        email,
-        role,
-      };
-      updateUserData(id, data); // Call the updateUserData function directly
+    if (!hasErrors || id !== "new") {
+      setOperating(true);
+
+      try {
+        const data = {
+          username: formData.username,
+          email: formData.email,
+          role: formData.role,
+        };
+
+        if (id === "new") {
+          data.password = formData.password;
+          data.passwordConfirm = formData.passwordConfirm;
+          const response = await createUser(data);
+
+          if (response.status === "success") {
+            setKey((prevKey) => prevKey + 1);
+            setAlert({
+              show: true,
+              icon: "successIcon",
+              message: "User created successfully!",
+              color: "green",
+            });
+
+            setTimeout(() => {
+              navigate("/admin/dashboard/users");
+            }, 1000);
+          }
+        } else {
+          const response = await updateUser(id, data);
+
+          if (response.status === "success") {
+            setKey((prevKey) => prevKey + 1);
+            setAlert({
+              show: true,
+              icon: "successIcon",
+              message: "User updated successfully!",
+              color: "green",
+            });
+
+            setTimeout(() => {
+              navigate("/admin/dashboard/users");
+            }, 1000);
+          }
+        }
+      } catch (error) {
+        setKey((prevKey) => prevKey + 1);
+        setAlert({
+          show: true,
+          icon: "errorIcon",
+          message: error.response
+            ? error.response.data.message
+            : "Something went wrong!",
+          color: "red",
+        });
+      } finally {
+        setOperating(false);
+      }
     }
-  };
-
-  const createNewUser = (e) => {
-    setLoading(true);
-    const data = {
-      username,
-      email,
-      password,
-      passwordConfirm,
-      role,
-    };
-    createUser(data)
-      .then((response) => {
-        setAlert({ icon: 'faCircleCheck', message: 'User created successfully', color: "#aaec8a", background: "#313e2c, #aaec8a", show: true });
-        setKey((prevKey) => prevKey + 1);
-        setUsername("");
-        setEmail("");
-        setPassword("");
-        setPasswordConfirm("");
-        setRole("");
-        setLoading(false);
-      })
-      .catch((error) => {
-        setAlert({ icon: 'faCircleXmark', message: error.response.data.message, color: "#e87474", show: true });
-        setKey((prevKey) => prevKey + 1);
-        setLoading(false);
-      });
-  };
-
-  const updateUserData = (id, data) => {
-    setLoading(true);
-    updateUser(id, data)
-      .then((response) => {
-        setAlert({ icon: 'faCircleCheck', message: 'User updated successfully', color: "#aaec8a", background: "#313e2c, #aaec8a", show: true });
-        setKey((prevKey) => prevKey + 1);
-        setLoading(false);
-      })
-      .catch((error) => {
-        setAlert({ icon: 'faCircleXmark', message: error.response.data.message, color: "#e87474", show: true });
-        setKey((prevKey) => prevKey + 1);
-        setLoading(false);
-      });
   };
 
   return (
     <Container>
+      <AlertComponent alert={alert} key={key} />
+      <Loader isLoading={operating} />
       <Form onSubmit={handleFormSubmit} className="podcast-form">
         <Row className="podcastForm-row">
           <Col>
@@ -105,10 +175,13 @@ const UserForm = ({ setLoading }) => {
               <Form.Control
                 type="text"
                 placeholder="Enter username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                value={formData.username}
+                onChange={(e) => handleFieldChange("username", e.target.value)}
                 className="podcastForm-control"
               />
+              {errors.username && (
+                <div className="error-message">{errors.username}</div>
+              )}
             </Form.Group>
           </Col>
         </Row>
@@ -119,10 +192,13 @@ const UserForm = ({ setLoading }) => {
               <Form.Control
                 type="text"
                 placeholder="Enter email address"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                value={formData.email}
+                onChange={(e) => handleFieldChange("email", e.target.value)}
                 className="podcastForm-control"
               />
+              {errors.email && (
+                <div className="error-message">{errors.email}</div>
+              )}
             </Form.Group>
           </Col>
         </Row>
@@ -132,8 +208,8 @@ const UserForm = ({ setLoading }) => {
               <Form.Label className="podcastForm-label">Role</Form.Label>
               <Form.Control
                 as="select"
-                value={role}
-                onChange={(e) => setRole(e.target.value)}
+                value={formData.role}
+                onChange={(e) => handleFieldChange("role", e.target.value)}
                 className="podcastForm-control"
               >
                 <option value="">Select user role</option>
@@ -144,44 +220,71 @@ const UserForm = ({ setLoading }) => {
             </Form.Group>
           </Col>
         </Row>
-        <Row className="podcastForm-row">
-          <Col>
-            <Form.Group controlId="password">
-              <Form.Label className="podcastForm-label">Password</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Enter password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="podcastForm-control"
-              />
-            </Form.Group>
-          </Col>
-          <Col>
-            <Form.Group controlId="Confirm Password">
-              <Form.Label className="podcastForm-label">
-                Confirm password
-              </Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Enter podcast creator"
-                value={passwordConfirm}
-                onChange={(e) => setPasswordConfirm(e.target.value)}
-                className="podcastForm-control"
-              />
-            </Form.Group>
-          </Col>
-        </Row>
+        {!id || id === "new" ? (
+          <Row className="podcastForm-row">
+            <Col>
+              <Form.Group controlId="password">
+                <Form.Label className="podcastForm-label">Password</Form.Label>
+                <Form.Control
+                  type="password"
+                  placeholder="Enter password"
+                  value={formData.password}
+                  onChange={(e) =>
+                    handleFieldChange("password", e.target.value)
+                  }
+                  className="podcastForm-control"
+                />
+                {errors.password && (
+                  <div className="error-message">{errors.password}</div>
+                )}
+              </Form.Group>
+            </Col>
+            <Col>
+              <Form.Group controlId="confirmPassword">
+                <Form.Label className="podcastForm-label">
+                  Confirm password
+                </Form.Label>
+                <Form.Control
+                  type="password"
+                  placeholder="Confirm password"
+                  value={formData.passwordConfirm}
+                  onChange={(e) =>
+                    handleFieldChange("passwordConfirm", e.target.value)
+                  }
+                  className="podcastForm-control"
+                />
+                {errors.passwordConfirm && (
+                  <div className="error-message">{errors.passwordConfirm}</div>
+                )}
+              </Form.Group>
+            </Col>
+          </Row>
+        ) : null}
 
         <Button
           variant="primary"
           type="submit"
           className="podcastForm-submit-button"
+          disabled={
+            id === "new"
+              ? operating ||
+                !formData.username ||
+                !formData.email ||
+                !formData.password ||
+                !formData.passwordConfirm ||
+                !!errors.username ||
+                !!errors.email ||
+                !!errors.password
+              : operating ||
+                !formData.username ||
+                !formData.email ||
+                !!errors.username ||
+                !!errors.email
+          }
         >
           {id === "new" ? "Create" : "Update"}
         </Button>
       </Form>
-      <AlertComponent alert={alert} />
     </Container>
   );
 };

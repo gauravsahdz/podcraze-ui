@@ -31,6 +31,10 @@
   margin-bottom: 20px;
 }
 
+.form_group {
+  margin-bottom: 10px;
+}
+
 .signup-form label {
   display: block;
   margin-bottom: 8px;
@@ -47,7 +51,6 @@
   box-sizing: border-box;
   border: 1px solid #dddddd;
   border-radius: 5px;
-  margin-bottom: 20px;
   font-size: 14px;
 }
 

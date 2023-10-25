@@ -3,13 +3,17 @@
   bottom: 4px;
   right: 4px;
   width: max-content;
-  border-radius: 6px;
-  box-shadow: 0 1px 10px rgba(0, 0, 0, 0.1);
   transform: translateY(30px);
   opacity: 0;
   visibility: hidden;
   animation: fade-in 3s linear;
   color: white;
+  background: rgba(112, 105, 105, 0.25);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
 }
 
 .notification__icon {

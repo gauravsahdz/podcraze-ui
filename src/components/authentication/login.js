@@ -2,57 +2,76 @@ import React, { useState } from "react";
 import { Form, Button, Container } from "react-bootstrap";
 
 import "../css/login.css";
-import { loginApi } from "../api/authService";
-import AlertComponent from "../utils/alert";
-import Loader from "../utils/loader";
+import { loginApi } from "../../api/authService";
+import { useNavigate } from "react-router-dom";
+import AlertComponent from "../../utils/alert/alert";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [alert, setAlert] = useState({ icon: "", message: "", color: "", background: "", show: false });
-  const [isLoading, setLoading] = useState(false);
-  const [key, setKey] = useState(0);
+  const [logginIn, setLogginIn] = useState(false);
+  const [alertKey, setAlertKey] = useState(0); // [0, 1, 2, 3, 4, 5, 6, 7, 8, 9
+  const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
-    setLoading(true);
+  const [alert, setAlert] = useState({
+    show: false,
+    icon: "",
+    message: "",
+    color: "",
+  });
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const data = {
-      email: email,
-      password: password,
-    };
+    setLogginIn(true);
 
-    loginApi(data)
-      .then((response) => {
+    try {
+      const data = {
+        email: email,
+        password: password,
+      };
+
+      const response = await loginApi(data);
+      if (response.token && response.token !== (undefined || null || "")) {
         const token = response.token;
         const user = response.data.user;
         if (token) {
           localStorage.setItem("token", token);
-          localStorage.setItem("user", JSON.stringify(user));
-        } else {
-          setLoading(false);
-          setAlert({ icon: 'faCircleXmark', message: 'Login Failed', color: "#e87474", background: "#313e2c, #e87474", show: true });
-          setKey((prevKey) => prevKey + 1);
-        }
+          localStorage.setItem("podcrazeUser", JSON.stringify(user));
 
-        if (user.role === "admin" || user.role === "moderator") {
-          window.location.href = "/admin/dashboard";
-        } else {
-          setLoading(false);
-          window.location.href = "/";
+          if (user.role === "admin" || user.role === "moderator") {
+            setTimeout(() => {
+              navigate("/admin/dashboard");
+            }, 1000);
+          } else {
+            setTimeout(() => {
+              navigate("/");
+            }, 1000);
+          }
         }
-        setAlert({ icon: 'faCircleCheck', message: 'Login Successful', color: "#aaec8a", background: "#313e2c, #aaec8a", show: true });
-        setKey((prevKey) => prevKey + 1);
-      })
-      .catch((error) => {
-        setLoading(false);
-        setAlert({ icon: 'faCircleXmark', message: error.response.data.message, color: "#e87474", background: "#313e2c, #e87474", show: true });
-        setKey((prevKey) => prevKey + 1);
+      }
+      setAlert({
+        show: true,
+        icon: "successIcon",
+        message: "Login Successful!",
+        color: "green",
       });
+      setAlertKey(alertKey + 1);
+    } catch (error) {
+      setAlert({
+        show: true,
+        icon: "errorIcon",
+        message: error.response ? error.response.data.message : "something went wrong!",
+        color: "red",
+      });
+      setAlertKey(alertKey + 1);
+    } finally {
+      setLogginIn(false);
+    }
   };
 
   return (
     <Container className="login">
-      {isLoading && <Loader />}
+      <AlertComponent alert={alert} key={alertKey} />
       <div className="login-form">
         <h2>Log In</h2>
         <Form onSubmit={handleSubmit}>
@@ -76,14 +95,11 @@ const Login = () => {
             />
           </Form.Group>
 
-          <Button variant="primary" type="submit">
-            Log In
+          <Button variant="primary" type="submit" disabled={logginIn}>
+            {logginIn ? "Loading..." : "Log In"}
           </Button>
         </Form>
       </div>
-
-      <AlertComponent key={key} alert={alert} />
-
     </Container>
   );
 };

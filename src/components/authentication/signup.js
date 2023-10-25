@@ -2,50 +2,67 @@ import React, { useState } from "react";
 import { Form, Button, Container } from "react-bootstrap";
 
 import "../css/signup.css";
-import { signupApi } from "../api/authService";
-import AlertComponent from "../utils/alert";
-import Loader from "../utils/loader";
+import { signupApi } from "../../api/authService";
+import { useNavigate } from "react-router-dom";
+import AlertComponent from "../../utils/alert/alert";
 
 const Signup = () => {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [passwordConfirm, setpasswordConfirm] = useState("");
-  const [alert, setAlert] = useState({ icon: "", message: "", color: "", background: "", show: false });
-  const [isLoading, setLoading] = useState(false);
-  const [key, setKey] = useState(0); 
+  const [passwordConfirm, setPasswordConfirm] = useState("");
+  const [logginIn, setLoggingIn] = useState(false);
+  const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
-    setLoading(true);
+  const [alert, setAlert] = useState({
+    show: false,
+    icon: "",
+    message: "",
+    color: "",
+  });
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const data = {
-      username: username,
-      email: email,
-      password: password,
-      passwordConfirm: passwordConfirm,
-    };
+    setLoggingIn(true);
+    try {
+      const data = {
+        username: username,
+        email: email,
+        password: password,
+        passwordConfirm: passwordConfirm,
+      };
+      const response = await signupApi(data);
+      if (response.status === "success") {
+        setAlert({
+          show: true,
+          icon: "successIcon",
+          message: "Signup Successful! Redirecting to login page...",
+          color: "green",
+        });
 
-    signupApi(data)
-      .then((response) => {
-        window.location.href = '/login';
-        setLoading(false);
-        setAlert({ icon: 'faCircleCheck', message: "Signup Successful", color: "#aaec8a", show: true });
-        setKey((prevKey) => prevKey + 1);
-      })
-      .catch((error) => {
-        setLoading(false);
-        setAlert({ icon: 'faCircleXmark', message: error.response.data.message, color: "#e87474", show: true });
-        setKey((prevKey) => prevKey + 1);
+        setTimeout(() => {
+          navigate("/login");
+        }, 2000);
+      }
+    } catch (error) {
+      setAlert({
+        show: true,
+        icon: "errorIcon",
+        message: error.response ? error.response.data.message : "something went wrong!",
+        color: "red",
       });
+    } finally {
+      setLoggingIn(false);
+    }
   };
 
   return (
     <Container className="signup">
-      {isLoading && <Loader />}
+      <AlertComponent alert={alert} />
       <div className="signup-form">
         <h2>Create an Account</h2>
         <Form onSubmit={handleSubmit}>
-          <Form.Group controlId="username">
+          <Form.Group controlId="username" className="form_group">
             <Form.Label>Username</Form.Label>
             <Form.Control
               type="text"
@@ -55,7 +72,7 @@ const Signup = () => {
             />
           </Form.Group>
 
-          <Form.Group controlId="email">
+          <Form.Group controlId="email" className="form_group">
             <Form.Label>Email</Form.Label>
             <Form.Control
               type="email"
@@ -65,7 +82,7 @@ const Signup = () => {
             />
           </Form.Group>
 
-          <Form.Group controlId="password">
+          <Form.Group controlId="password" className="form_group">
             <Form.Label>Password</Form.Label>
             <Form.Control
               type="password"
@@ -75,18 +92,18 @@ const Signup = () => {
             />
           </Form.Group>
 
-          <Form.Group controlId="passwordConfirm">
+          <Form.Group controlId="passwordConfirm" className="form_group">
             <Form.Label>Confirm Password</Form.Label>
             <Form.Control
               type="password"
               placeholder="Confirm your password"
               value={passwordConfirm}
-              onChange={(e) => setpasswordConfirm(e.target.value)}
+              onChange={(e) => setPasswordConfirm(e.target.value)}
             />
           </Form.Group>
 
-          <Button variant="primary" type="submit">
-            Sign Up
+          <Button variant="primary" type="submit" disabled={logginIn}>
+            {logginIn ? "Loading..." : "Sign Up"}
           </Button>
           <p
             style={{
@@ -106,7 +123,6 @@ const Signup = () => {
           </p>
         </Form>
       </div>
-      <AlertComponent key={key} alert={alert} />
     </Container>
   );
 };
